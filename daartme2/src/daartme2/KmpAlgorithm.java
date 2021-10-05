@@ -9,6 +9,11 @@ public class KmpAlgorithm {
 	private ArrayList<String> Factor;
 	private ArrayList<Integer> CarryOver;
 	
+	public KmpAlgorithm(String regEx, String text) {
+		this.regEx = regEx;
+		this.text = text;
+	}
+	
 	public void generateFunctor() {
 		this.Factor = new ArrayList<String>();
 		for (int i = 0; i < regEx.length(); i++) {
@@ -91,7 +96,41 @@ public class KmpAlgorithm {
 		return this.Factor;
 	}
 	
-	public KmpAlgorithm(String regEx) {
-		this.regEx = regEx;
+	public String[] textToLines() {
+		String[] subString = this.text.split("\n");
+		return subString;
 	}
+	
+	public String searchInAllSuffixs(String line) {
+		int i = 0;
+		while((i < line.length()) && ((line.length()- i) >= Factor.size())) {
+			int crashIndice = 0;
+			for (int j = 0; j < Factor.size(); j++) {
+				if (Factor.get(j).equals(""+line.charAt(j+i))) {
+					crashIndice++;
+				}
+			}
+			if (crashIndice == Factor.size()) {
+				return getSuffixFromN(line, line.length()-i);
+			} else {
+				i = i + crashIndice - CarryOver.get(crashIndice);
+			}
+		}
+		return null;
+	}
+	
+	public ArrayList<String> search() {
+		String[] textLines = textToLines();
+		ArrayList<String> listResults = new ArrayList<String>();
+		for (int i = 0; i < textLines.length; i++) {
+			String result = searchInAllSuffixs(textLines[i]);
+			if (result != null) {
+				listResults.add(result);
+			}
+		}
+		return listResults;
+	}
+	
+	
+	
 }
